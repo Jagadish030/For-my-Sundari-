@@ -18,7 +18,7 @@
       overflow-x: hidden;
     }
 
-    /* Floating Flowers Animation */
+    /* Floating Flowers */
     .flower-bg {
       position: fixed;
       top: -10%;
@@ -47,17 +47,13 @@
       border: 2px solid #fff;
     }
 
-    /* Decorative Corner Flowers */
-    .corner-flower {
-      position: absolute;
-      font-size: 1.5rem;
-      z-index: 2;
-    }
+    .corner-flower { position: absolute; font-size: 1.5rem; z-index: 2; }
     .top-left { top: 10px; left: 10px; }
     .top-right { top: 10px; right: 10px; }
     .bottom-left { bottom: 10px; left: 10px; }
     .bottom-right { bottom: 10px; right: 10px; }
 
+    /* SMOOTH IMAGE TRANSITION FIX */
     .photo-display {
       width: 250px;
       height: 250px;
@@ -66,8 +62,10 @@
       margin: 0 auto 15px auto;
       display: block;
       box-shadow: 0 10px 20px rgba(238, 156, 167, 0.4);
-      transition: opacity 0.8s ease-in-out;
+      /* Changed to linear for consistent fading speed */
+      transition: opacity 1s linear; 
       border: 4px solid white;
+      opacity: 1;
     }
 
     #message {
@@ -86,11 +84,7 @@
     }
 
     .hidden { display: none; }
-
-    .valentine-section h2 {
-      margin-bottom: 20px;
-      color: #ff5e7e;
-    }
+    .valentine-section h2 { margin-bottom: 20px; color: #ff5e7e; }
 
     button {
       padding: 12px 24px;
@@ -103,22 +97,8 @@
       font-weight: bold;
     }
 
-    #yesBtn {
-      background: #ff5e7e;
-      color: white;
-      box-shadow: 0 4px 15px rgba(255, 94, 126, 0.3);
-    }
-
-    #noBtn {
-      background: #ccc;
-      position: absolute;
-      display: inline-block;
-      z-index: 999;
-      left: 50%; 
-      transform: translateX(10px);
-    }
-
-    button:hover { transform: scale(1.1); }
+    #yesBtn { background: #ff5e7e; color: white; box-shadow: 0 4px 15px rgba(255, 94, 126, 0.3); }
+    #noBtn { background: #ccc; position: absolute; display: inline-block; z-index: 999; left: 50%; transform: translateX(10px); }
 
     .final-message {
       font-size: 1.4rem;
@@ -128,9 +108,8 @@
     }
     
     @keyframes heartBeat {
-      0% { transform: scale(1); }
+      0%, 100% { transform: scale(1); }
       50% { transform: scale(1.05); }
-      100% { transform: scale(1); }
     }
   </style>
 </head>
@@ -162,10 +141,9 @@
   </div>
 
   <script>
-    // Create floating flowers background
+    // 1. Floating flowers logic (same as before)
     const flowerContainer = document.getElementById('flower-container');
     const flowerEmojis = ['🌸', '🌼', '🌷', '✨', '💛'];
-    
     for (let i = 0; i < 20; i++) {
       let flower = document.createElement('div');
       flower.className = 'flower-bg';
@@ -184,6 +162,35 @@
       "photos/photo10.jpeg", "photos/photo11.jpeg"
     ];
 
+    // PRELOAD IMAGES: This is the key fix for GitHub stuttering
+    const preloadedImages = [];
+    images.forEach((src) => {
+      const img = new Image();
+      img.src = src;
+      preloadedImages.push(img);
+    });
+
+    const imgEl = document.getElementById("slideshow");
+    let imgIndex = 0;
+
+    function changeImage() {
+      // 1. Fade out
+      imgEl.style.opacity = 0; 
+      
+      // 2. Wait for fade out to complete (1 second matches CSS transition)
+      setTimeout(() => {
+        imgIndex = (imgIndex + 1) % images.length;
+        // Use the preloaded source
+        imgEl.src = images[imgIndex]; 
+        
+        // 3. Fade back in
+        imgEl.style.opacity = 1;
+      }, 1000); 
+    }
+
+    const imageInterval = setInterval(changeImage, 4000); // Increased time to allow for the 1s fade
+
+    // Typing logic (same as before)
     const text = `My dear sundari,
 I was thinking of writing something and realised that i don't often tell you this but you make my life better just by being in it.
 
@@ -200,48 +207,27 @@ Love you Bangaram 💛....`;
     const finalEl = document.getElementById("final");
     const noBtn = document.getElementById("noBtn");
     const yesBtn = document.getElementById("yesBtn");
-    const imgEl = document.getElementById("slideshow");
 
     let index = 0;
-    let imgIndex = 0;
-
-    function changeImage() {
-      imgIndex = (imgIndex + 1) % images.length;
-      imgEl.style.opacity = 0; 
-      setTimeout(() => {
-        imgEl.src = images[imgIndex];
-        imgEl.style.opacity = 1;
-      }, 800);
-    }
-
-    const imageInterval = setInterval(changeImage, 3500);
-
     function typeWriter() {
       if (index < text.length) {
         messageEl.innerHTML += text.charAt(index);
         index++;
-        
         const isAtBottom = messageEl.scrollHeight - messageEl.clientHeight <= messageEl.scrollTop + 50;
-        if (isAtBottom) {
-          messageEl.scrollTop = messageEl.scrollHeight;
-        }
-        
+        if (isAtBottom) { messageEl.scrollTop = messageEl.scrollHeight; }
         setTimeout(typeWriter, 40); 
       } else {
         clearInterval(imageInterval); 
-        setTimeout(() => {
-          valentineEl.classList.remove("hidden");
-        }, 1000);
+        setTimeout(() => { valentineEl.classList.remove("hidden"); }, 1000);
       }
     }
-
     typeWriter();
 
+    // No button logic (same as before)
     noBtn.addEventListener("mouseover", () => {
       noBtn.style.position = "fixed";
-      const padding = 50;
-      const x = Math.random() * (window.innerWidth - noBtn.offsetWidth - padding);
-      const y = Math.random() * (window.innerHeight - noBtn.offsetHeight - padding);
+      const x = Math.random() * (window.innerWidth - noBtn.offsetWidth - 50);
+      const y = Math.random() * (window.innerHeight - noBtn.offsetHeight - 50);
       noBtn.style.left = x + "px";
       noBtn.style.top = y + "px";
     });
@@ -250,7 +236,6 @@ Love you Bangaram 💛....`;
       valentineEl.classList.add("hidden");
       imgEl.style.display = "none"; 
       messageEl.classList.add("hidden");
-      // Hide corner flowers for the final screen
       document.querySelectorAll('.corner-flower').forEach(f => f.style.display = 'none');
       finalEl.classList.remove("hidden");
     });
