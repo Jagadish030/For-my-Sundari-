@@ -80,10 +80,14 @@
     }
 
     #noBtn {
-      background: #ccc;
-      position: fixed; /* Fixed works better for "run away" */
-      z-index: 999;
-    }
+  background: #ccc;
+  position: absolute; /* Changed back to absolute for initial alignment */
+  display: inline-block;
+  z-index: 999;
+  /* This centers it horizontally relative to the container initially */
+  left: 50%; 
+  transform: translateX(10px); /* Adjusts it to sit to the right of Yes */
+}
 
     button:hover { transform: scale(1.1); }
 
@@ -187,11 +191,17 @@ Love you Bangaram 💛....`;
 
     // No button runs away logic
     noBtn.addEventListener("mouseover", () => {
-      const x = Math.random() * (window.innerWidth - 120);
-      const y = Math.random() * (window.innerHeight - 50);
-      noBtn.style.left = x + "px";
-      noBtn.style.top = y + "px";
-    });
+  // Switch to fixed position the moment she tries to touch it
+  // This allows it to fly anywhere on the whole screen
+  noBtn.style.position = "fixed";
+
+  const padding = 50;
+  const x = Math.random() * (window.innerWidth - noBtn.offsetWidth - padding);
+  const y = Math.random() * (window.innerHeight - noBtn.offsetHeight - padding);
+  
+  noBtn.style.left = x + "px";
+  noBtn.style.top = y + "px";
+});
 
     yesBtn.addEventListener("click", () => {
       valentineEl.classList.add("hidden");
