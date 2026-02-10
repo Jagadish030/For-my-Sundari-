@@ -114,7 +114,7 @@
   </style>
 </head>
 <body> 
-
+  <audio id="loveSong" src="Audio/The last leaf.mp3" preload="auto"></audio>
   <div id="flower-container"></div>
 
   <div class="container">
@@ -233,6 +233,11 @@ Love you Bangaram 💛....`;
     });
 
     yesBtn.addEventListener("click", () => {
+      // Get the audio element and play it
+      const audio = document.getElementById("loveSong");
+      audio.play().catch(error => {
+        console.log("Audio playback failed:", error);
+      });
       valentineEl.classList.add("hidden");
       imgEl.style.display = "none"; 
       messageEl.classList.add("hidden");
